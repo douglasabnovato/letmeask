@@ -1,66 +1,43 @@
+/* Assina a sala no Realtime Database e expõe título, perguntas ordenadas, autor e estado */
 import { useEffect, useState } from "react";
-
 import { database } from "../services/firebase";
 import { useAuth } from "./useAuth";
+import { FirebaseQuestion, parseQuestions, QuestionType, sortQuestions } from "../domain/questions";
 
-type FirebaseQuestions = Record<string, {
-  author: {
-    name: string;
-    avatar: string;
-  }
-  content: string;
-  isAnswered: boolean;
-  isHighlighted: boolean;
-  likes: Record<string, {
-    authorId: string;
-  }>
-}>
-
-type QuestionType = {
-  id: string;
-  author: {
-    name: string;
-    avatar: string;
-  }
-  content: string;
-  isAnswered: boolean;
-  isHighlighted: boolean;
-  likeCount: number;
-  likeId: string | undefined;
-}
+type RoomState = {
+  loading: boolean;
+  notFound: boolean;
+  title: string;
+  authorId?: string;
+  endedAt?: number | string;
+  questions: QuestionType[];
+};
 
 export function useRoom(roomId: string | undefined) {
   const { user } = useAuth();
-  const [questions, setQuestions] = useState<QuestionType[]>([])
-  const [title, setTitle] = useState('');
+  const [state, setState] = useState<RoomState>({ loading: true, notFound: false, title: "", questions: [] });
 
   useEffect(() => {
+    if (!roomId || !database) return undefined;
     const roomRef = database.ref(`rooms/${roomId}`);
-
-    roomRef.on('value', room => {
-      const databaseRoom = room.val();
-      const firebaseQuestions: FirebaseQuestions = databaseRoom.questions ?? {};
-
-      const parsedQuestions = Object.entries(firebaseQuestions).map(([key, value]) => {
-        return {
-          id: key,
-          content: value.content,
-          author: value.author,
-          isHighlighted: value.isHighlighted,
-          isAnswered: value.isAnswered,
-          likeCount: Object.values(value.likes ?? {}).length,
-          likeId: Object.entries(value.likes ?? {}).find(([key, like]) => like.authorId === user?.id)?.[0],
-        }
-      })
-
-      setTitle(databaseRoom.title);
-      setQuestions(parsedQuestions);
-    })
-
-    return () => {
-      roomRef.off('value');
-    }
+    const listener = roomRef.on("value", (snapshot) => {
+      const room = snapshot.val() as { title: string; authorId: string; endedAt?: number; questions?: Record<string, FirebaseQuestion> } | null;
+      if (!room) {
+        setState({ loading: false, notFound: true, title: "", questions: [] });
+        return;
+      }
+      setState({
+        loading: false,
+        notFound: false,
+        title: room.title,
+        authorId: room.authorId,
+        endedAt: room.endedAt,
+        questions: sortQuestions(parseQuestions(room.questions, user?.id)),
+      });
+    });
+    return () => roomRef.off("value", listener);
   }, [roomId, user?.id]);
 
-  return { questions, title }
+  return state;
 }
+/* Fim de useRoom.ts */

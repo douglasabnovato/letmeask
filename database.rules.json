@@ -2,16 +2,27 @@
   "rules": {
     "rooms": {
       ".read": false,
-      ".write": "auth != null",
       "$roomId": {
         ".read": true,
-        ".write": "auth != null && (!data.exists() || data.child('authorId').val() == auth.id)",
+        ".write": "auth != null && (data.exists() ? data.child('authorId').val() === auth.uid : newData.child('authorId').val() === auth.uid)",
+        ".validate": "!newData.exists() || newData.hasChildren(['title', 'authorId'])",
+        "title": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100" },
+        "authorId": { ".validate": "newData.isString() && (!data.exists() || data.val() === newData.val())" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "endedAt": { ".validate": "newData.isNumber()" },
         "questions": {
-          ".read": true,
-          ".write": "auth != null && (!data.exists() || data.parent().child('authorId').val() == auth.id)",
-          "likes": {
-            ".read": true,
-            ".write": "auth != null && (!data.exists() || data.child('authorId').val() == auth.id)"  
+          "$questionId": {
+            ".write": "auth != null && (root.child('rooms').child($roomId).child('authorId').val() === auth.uid || (!data.exists() && newData.child('authorId').val() === auth.uid && !root.child('rooms').child($roomId).child('endedAt').exists()))",
+            ".validate": "!newData.exists() || newData.hasChildren(['content', 'author', 'isAnswered', 'isHighlighted'])",
+            "content": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 1000" },
+            "isAnswered": { ".validate": "newData.isBoolean()" },
+            "isHighlighted": { ".validate": "newData.isBoolean()" },
+            "likes": {
+              "$likeId": {
+                ".write": "auth != null && (data.exists() ? data.child('authorId').val() === auth.uid : newData.child('authorId').val() === auth.uid)",
+                ".validate": "!newData.exists() || newData.child('authorId').isString()"
+              }
+            }
           }
         }
       }

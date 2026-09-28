@@ -20,6 +20,12 @@
 
 <br>
 
+## 🌐 Em produção
+
+- URL: https://douglasabnovato.github.io/letmeask/
+- Hospedagem: GitHub Pages publicado pelo GitHub Actions a cada push na `main` (variáveis `VITE_FIREBASE_*` nas Variables do repositório) + Firebase (Authentication e Realtime Database, plano Spark). Alternativa: Firebase Hosting com `npm run deploy`
+- Passo a passo, incluindo a publicação das regras do banco: [docs/DEPLOY.md](docs/DEPLOY.md)
+
 ## 💻 Projeto 
 
 Letmeask é perfeito para criadores de conteúdos poderem criar salas de Q&A com o seu público, de uma forma muito organizada e democrática.  
@@ -109,31 +115,42 @@ Esse projeto foi desenvolvido com as seguintes tecnologias:
 
 ---
 
-#### 🚀 warning para corrigir
+#### Versão 2.0 (revisão de qualidade)
 
-- Node Sass does not yet support your current environment: Windows 64-bit with Uns
-upported runtime (93)
+- [x] Build com Vite 8 (saiu do CRA 4 e do node-sass, que não rodava no Node 20)
+- [x] Regras do banco corrigidas: `auth.uid`, só o dono modera, curtidas e perguntas em nome próprio
+- [x] Rotas corrigidas, página 404, painel só para quem criou a sala
+- [x] Copiar código da sala, mensagens em português, estados de carregando e sala encerrada
+- [x] Acessibilidade WCAG AA (axe-core sem violações) e layout responsivo
+- [x] Testes: `npm test` (interface) e `npm run test:rules` (regras no emulador)
+
+Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUITETURA.md) e [docs/PLANO-DE-ACAO.md](docs/PLANO-DE-ACAO.md).
 
 ---
 
 ## 🚀 Como executar
 
-Clone o projeto e acesse a pasta do mesmo. 
+Requisitos: Node 22+ e, para os testes de regras, Java 11+.
+
 ```bash
 $ git clone https://github.com/douglasabnovato/letmeask
 $ cd letmeask
+$ npm install
+$ cp .env.example .env   # preencha com as chaves do seu projeto Firebase
+$ npm run dev            # http://localhost:5173
 ```
 
-Para iniciá-lo, siga os passos abaixo:
-```bash
-# Instalar as dependências
-$ yarn
-# Iniciar o projeto
-$ yarn start
-```
-O app estará disponível no seu browser pelo endereço http://localhost:3000. 
-Lembrando que será necessário criar uma conta no [Firebase](https://firebase.google.com/) e um projeto para disponibilizar um Realtime Database.
- 
+No [Firebase](https://firebase.google.com/): crie o projeto, ative **Authentication > Google** e o **Realtime Database**.
+
+| Comando | O que faz |
+|---|---|
+| `npm test` | Testes de interface (Vitest) |
+| `npm run test:rules` | Testes das regras no emulador do Realtime Database |
+| `npm run build` | Typecheck + build em `build/` (base `/`, para o Firebase Hosting) |
+| `npm run build:pages` | Build com base `/letmeask/` e `404.html`, usado pelo CI para o GitHub Pages |
+| `npm run deploy` | Alternativa: build + `firebase deploy` (Hosting e regras, plano gratuito Spark) |
+| `npx firebase-tools deploy --only database` | Publica só as regras do Realtime Database |
+
 ## 🔖 Layout 
 
 Você pode visualizar o layout do projeto através do link abaixo:

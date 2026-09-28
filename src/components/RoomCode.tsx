@@ -1,22 +1,28 @@
-import copyImg from '../assets/images/copy.svg';
+/* Botão que copia o código da sala e confirma a cópia para leitores de tela */
+import { useState } from "react";
+import copyImg from "../assets/images/copy.svg";
+import "../styles/room-code.scss";
 
-import '../styles/room-code.scss';
+export function RoomCode({ code }: { code: string | undefined }) {
+  const [copied, setCopied] = useState(false);
 
-type RoomCodeProps = {
-  code: string | undefined;
-} 
-
-export function RoomCode(props: RoomCodeProps) {
-  function copyRoomCodeToClipboard() {
-    //navigator.clipboard.writeText(props.code)
+  /* Copia o código para a área de transferência */
+  async function copyRoomCodeToClipboard() {
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
   }
 
   return (
-    <button className="room-code" onClick={copyRoomCodeToClipboard}>
-      <div>
-        <img src={copyImg} alt="Copy room code" />
-      </div>
-      <span>Sala #{props.code}</span>
+    <button type="button" className="room-code" onClick={copyRoomCodeToClipboard} aria-label={`Copiar código da sala ${code}`}>
+      <div><img src={copyImg} alt="" /></div>
+      <span aria-live="polite">{copied ? "Código copiado!" : `Sala #${code}`}</span>
     </button>
-  )
+  );
 }
+/* Fim de RoomCode.tsx */
