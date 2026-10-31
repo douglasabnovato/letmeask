@@ -1,4 +1,4 @@
-> **Projeto de estudo.** Estado conferido em 30/10/2026: 1 endereço(s) citado(s) abaixo não responde(m). Detalhes em [docs/AVALIACAO.md](docs/AVALIACAO.md) e próximos passos em [docs/PLANO-ESTRATEGICO.md](docs/PLANO-ESTRATEGICO.md).
+> **Projeto de estudo.** Estado conferido em 31/10/2026: os endereços que seguem fora do ar foram retirados deste README. Detalhes em [docs/AVALIACAO.md](docs/AVALIACAO.md) e próximos passos em [docs/PLANO-ESTRATEGICO.md](docs/PLANO-ESTRATEGICO.md).
 
 <h4 align="center"> 
   Letmeask 🚀
@@ -22,10 +22,10 @@
 
 <br>
 
-## 🌐 Em produção
+## 🌐 Publicação
 
-- URL: https://douglasabnovato.github.io/letmeask/
-- Hospedagem: GitHub Pages publicado pelo GitHub Actions a cada push na `main` (variáveis `VITE_FIREBASE_*` nas Variables do repositório) + Firebase (Authentication e Realtime Database, plano Spark). Alternativa: Firebase Hosting com `npm run deploy`
+- Fora do ar desde a conferência de 31/10/2026; para ver o projeto, rode localmente (seção "Como executar").
+- Hospedagem prevista: GitHub Pages publicado pelo GitHub Actions a cada push na `main` (variáveis `VITE_FIREBASE_*` nas Variables do repositório) + Firebase (Authentication e Realtime Database, plano Spark). Alternativa: Firebase Hosting com `npm run deploy`
 - Passo a passo, incluindo a publicação das regras do banco: [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ## 💻 Projeto 
