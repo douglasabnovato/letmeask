@@ -22,6 +22,15 @@
 
 <br>
 
+## 🧠 O que aprendi
+
+> Proposta de 01/11/2026, escrita a partir do código e das dependências. Ajuste com a sua experiência.
+
+- Criar uma aplicação React em TypeScript com Vite.
+- Usar o Firebase como backend, com regras de segurança testadas (`tests/rules.test.ts`).
+- Organizar rotas com React Router.
+- Testar a interface com Vitest.
+
 ## 🌐 Publicação
 
 - Fora do ar desde a conferência de 31/10/2026; para ver o projeto, rode localmente (seção "Como executar").
