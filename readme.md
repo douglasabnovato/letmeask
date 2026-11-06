@@ -33,7 +33,7 @@
 
 ## 🌐 Publicação
 
-- Fora do ar desde a conferência de 31/10/2026; para ver o projeto, rode localmente (seção "Como executar").
+- https://letmeask-aulas.web.app respondeu 200 em 06/11/2026, mas com uma build antiga (do Create React App, anterior à versão 2.0). Para ver a versão atual, rode localmente (seção "Como executar"). Publicar a atual: #12.
 - Hospedagem prevista: GitHub Pages publicado pelo GitHub Actions a cada push na `main` (variáveis `VITE_FIREBASE_*` nas Variables do repositório) + Firebase (Authentication e Realtime Database, plano Spark). Alternativa: Firebase Hosting com `npm run deploy`
 - Passo a passo, incluindo a publicação das regras do banco: [docs/DEPLOY.md](docs/DEPLOY.md)
 
@@ -139,6 +139,28 @@ Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUI
 
 ---
 
+## Estado e próximos passos (ciclo de 03/11/2026)
+
+Projeto de estudo (N1): 8 de 10 critérios aplicáveis atendidos. **Finalizado**: os 2 que faltam dependem do responsável (#13, #14).
+
+**O que foi feito**
+- Estado de estudo, avaliação e CI de verificação registrados (#2).
+- MVP de estudo com acessibilidade conferida (#6).
+- Alertas altos do Firebase resolvidos com override do `@grpc/grpc-js` (#9).
+- Neste ciclo: CI também nos PRs para `developer/**`, testes das regras do banco no CI, testes de falhas do Firebase e limpeza dos arquivos do Create React App (#11).
+
+**O que queremos fazer**
+- #12 Confirmar o Firebase e publicar a versão atual (responsável).
+- #13 Proteger a `main` com PR e CI obrigatórios (responsável).
+- #14 Percorrer o fluxo completo com o Firebase real (responsável).
+- #15 Moderação de perguntas pelo dono da sala.
+- #16 Pergunta anônima em sala com moderação.
+- #17 Decidir o modelo de CI com deploy em `ci/` (responsável).
+
+**Onde está a documentação**
+- Estado e critérios: [docs/MVP.md](docs/MVP.md)
+- Plano, pesquisa e backlog: [docs/PLANO-DE-ACAO.md](docs/PLANO-DE-ACAO.md) (seção "Ciclo de 03/11/2026")
+
 ## 🚀 Como executar
 
 Requisitos: Node 22+ e, para os testes de regras, Java 11+.
@@ -158,7 +180,7 @@ No [Firebase](https://firebase.google.com/): crie o projeto, ative **Authenticat
 | `npm test` | Testes de interface (Vitest) |
 | `npm run test:rules` | Testes das regras no emulador do Realtime Database |
 | `npm run build` | Typecheck + build em `build/` (base `/`, para o Firebase Hosting) |
-| `npm run build:pages` | Build com base `/letmeask/` e `404.html`, usado pelo CI para o GitHub Pages |
+| `npm run build:pages` | Build com base `/letmeask/` e `404.html` para o GitHub Pages (previsto no modelo `ci/github-actions-ci.yml`, ainda não ativo: #17) |
 | `npm run deploy` | Alternativa: build + `firebase deploy` (Hosting e regras, plano gratuito Spark) |
 | `npx firebase-tools deploy --only database` | Publica só as regras do Realtime Database |
 
