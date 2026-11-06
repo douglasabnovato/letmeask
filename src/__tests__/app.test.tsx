@@ -7,21 +7,23 @@ import { parseQuestions, sortQuestions, questionCountLabel } from "../domain/que
 const rooms: Record<string, unknown> = {};
 const pushed: Array<{ path: string; value: unknown }> = [];
 let currentUser: { uid: string; displayName: string; photoURL: string | null } | null = null;
+let offline = false;
+let popupFails = false;
 
 vi.mock("../services/firebase", () => {
   const snapshot = (v: unknown) => ({ val: () => v ?? null, exists: () => v != null });
   const ref = (path: string) => {
     const id = path.split("/")[1];
     return {
-      get: async () => snapshot(rooms[id]),
+      get: async () => { if (offline) throw new Error("network"); return snapshot(rooms[id]); },
       on: (_e: string, cb: (s: unknown) => void) => { cb(snapshot(rooms[id])); return cb; },
       off: () => undefined,
-      push: vi.fn(async (value: unknown) => { pushed.push({ path, value }); return { key: "nova" }; }),
+      push: vi.fn(async (value: unknown) => { if (offline) throw new Error("network"); pushed.push({ path, value }); return { key: "nova" }; }),
     };
   };
   return {
     isFirebaseConfigured: true,
-    auth: { onAuthStateChanged: (cb: (u: unknown) => void) => { cb(currentUser); return () => undefined; }, signInWithPopup: vi.fn(), signOut: vi.fn() },
+    auth: { onAuthStateChanged: (cb: (u: unknown) => void) => { cb(currentUser); return () => undefined; }, signInWithPopup: vi.fn(async () => { if (popupFails) throw new Error("auth/popup-closed-by-user"); return { user: null }; }), signOut: vi.fn() },
     database: { ref },
     firebase: { auth: { GoogleAuthProvider: class {} }, database: { ServerValue: { TIMESTAMP: 0 } } },
   };
@@ -34,6 +36,8 @@ beforeEach(() => {
   for (const k of Object.keys(rooms)) delete rooms[k];
   pushed.length = 0;
   currentUser = null;
+  offline = false;
+  popupFails = false;
   window.history.pushState({}, "", "/");
 });
 
@@ -92,6 +96,36 @@ describe("permissões na interface", () => {
     render(<App />);
     expect(await screen.findByText(/Somente quem criou/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /Encerrar sala/ })).toBeNull();
+  });
+});
+describe("falhas do Firebase", () => {
+  it("entrar em sala sem conexão mostra aviso", async () => {
+    offline = true;
+    render(<App />);
+    await userEvent.type(screen.getByLabelText("Código da sala"), "sala-1");
+    await userEvent.click(screen.getByRole("button", { name: "Entrar na sala" }));
+    expect((await screen.findByRole("alert")).textContent).toBe("Sem conexão. Tente novamente.");
+  });
+
+  it("login com Google cancelado mostra aviso e fica na página inicial", async () => {
+    popupFails = true;
+    render(<App />);
+    await userEvent.click(screen.getByRole("button", { name: /Crie sua sala com o Google/ }));
+    expect((await screen.findByRole("alert")).textContent).toBe("Não foi possível entrar com o Google. Tente novamente.");
+    expect(window.location.pathname).toBe("/");
+  });
+
+  it("pergunta que não chega ao banco mostra erro e mantém o texto", async () => {
+    currentUser = { uid: "u9", displayName: "Ana Souza", photoURL: null };
+    rooms.r4 = { title: "Aula", authorId: "dono", questions: {} };
+    window.history.pushState({}, "", "/rooms/r4");
+    render(<App />);
+    const field = await screen.findByLabelText("Sua pergunta");
+    await userEvent.type(field, "Funciona offline?");
+    offline = true;
+    await userEvent.click(screen.getByRole("button", { name: "Enviar pergunta" }));
+    expect(await screen.findByText("Não foi possível enviar. Tente novamente.")).toBeTruthy();
+    expect((field as HTMLTextAreaElement).value).toBe("Funciona offline?");
   });
 });
 /* Fim de app.test.tsx */
