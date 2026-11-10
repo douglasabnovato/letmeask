@@ -141,7 +141,7 @@ Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUI
 
 ## Estado e próximos passos (ciclo de 03/11/2026)
 
-Projeto de estudo (N1): 8 de 10 critérios aplicáveis atendidos. **Finalizado**: os 2 que faltam dependem do responsável (#13, #14).
+Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos. **Finalizado**: o que falta depende do responsável (#14). A `main` está protegida desde 10/11/2026 (#13).
 
 **O que foi feito**
 - Estado de estudo, avaliação e CI de verificação registrados (#2).
@@ -151,7 +151,6 @@ Projeto de estudo (N1): 8 de 10 critérios aplicáveis atendidos. **Finalizado**
 
 **O que queremos fazer**
 - #12 Confirmar o Firebase e publicar a versão atual (responsável).
-- #13 Proteger a `main` com PR e CI obrigatórios (responsável).
 - #14 Percorrer o fluxo completo com o Firebase real (responsável).
 - #15 Moderação de perguntas pelo dono da sala.
 - #16 Pergunta anônima em sala com moderação.
