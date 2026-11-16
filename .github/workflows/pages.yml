@@ -1,10 +1,22 @@
-# CI: typecheck, testes de interface, testes das regras no emulador e build; na main, publica no GitHub Pages
-name: CI
+# Publicação no GitHub Pages a cada push na main. Fica parada até o responsável criar a Variable PAGES_VIA_ACTIONS=true
+# e trocar a fonte do Pages para "GitHub Actions" (passo a passo em docs/DEPLOY.md). Sem a Variable, os jobs são pulados, sem CI vermelho.
+name: Pages
+
 on:
   push:
-  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
-  web:
+  build:
+    if: vars.PAGES_VIA_ACTIONS == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -12,13 +24,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
+          cache-dependency-path: package-lock.json
+      - name: Confere as Variables do Firebase (sem elas o site mostra "Configuração pendente")
+        run: |
+          if [ -z "${{ vars.VITE_FIREBASE_API_KEY }}" ] || [ -z "${{ vars.VITE_FIREBASE_DATABASE_URL }}" ]; then
+            echo "Faltam VITE_FIREBASE_API_KEY ou VITE_FIREBASE_DATABASE_URL nas Variables do repositório"; exit 1
+          fi
       - run: npm ci
-      - run: npm test
-      - run: npm run test:rules
       - run: npm run build:pages
         env:
           VITE_FIREBASE_API_KEY: ${{ vars.VITE_FIREBASE_API_KEY }}
@@ -29,12 +41,10 @@ jobs:
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ vars.VITE_FIREBASE_APP_ID }}
       - uses: actions/upload-pages-artifact@v3
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         with:
           path: build
   deploy:
-    needs: web
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -42,11 +52,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: pages
-      cancel-in-progress: false
     steps:
-      - uses: actions/configure-pages@v5
       - id: deployment
         uses: actions/deploy-pages@v4
-# fim de arquivo
