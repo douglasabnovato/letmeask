@@ -137,8 +137,7 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   await outro.close();
 });
 
-test("só teclado: Tab chega aos controles da Home com foco visível e o código vazio mostra aviso", async ({ page }, info) => {
-  test.skip(info.project.name === "celular", "teclado só no desktop");
+test("só teclado: Tab chega aos controles da Home com foco visível e o código vazio mostra aviso", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("button", { name: "Crie sua sala com o Google" })).toBeVisible();
 
