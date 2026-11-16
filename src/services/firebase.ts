@@ -18,7 +18,7 @@ const firebaseConfig = {
 export const isFirebaseConfigured = Boolean(firebaseConfig.apiKey && firebaseConfig.databaseURL);
 
 type EmulatorTargets = {
-  auth: { useEmulator: (url: string) => void };
+  auth: { useEmulator: (url: string, options?: { disableWarnings: boolean }) => void };
   database: { useEmulator: (host: string, port: number) => void };
 };
 
@@ -28,7 +28,8 @@ export function connectEmulators(targets: EmulatorTargets, flag: string | undefi
   if (!projectId?.startsWith("demo-")) {
     throw new Error("VITE_FIREBASE_EMULATORS=true exige VITE_FIREBASE_PROJECT_ID começando com demo-.");
   }
-  targets.auth.useEmulator("http://127.0.0.1:9099");
+  /* Sem a faixa de aviso do emulador no rodapé: ela fica fora dos landmarks e não é do app (o aviso segue no console) */
+  targets.auth.useEmulator("http://127.0.0.1:9099", { disableWarnings: true });
   targets.database.useEmulator("127.0.0.1", 9000);
   return true;
 }

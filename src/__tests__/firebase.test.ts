@@ -17,7 +17,7 @@ describe("connectEmulators", () => {
   it("com a variável e projeto demo-*, liga Auth em 9099 e banco em 9000", () => {
     const t = targets();
     expect(connectEmulators(t, "true", "demo-letmeask")).toBe(true);
-    expect(t.auth.useEmulator).toHaveBeenCalledWith("http://127.0.0.1:9099");
+    expect(t.auth.useEmulator).toHaveBeenCalledWith("http://127.0.0.1:9099", { disableWarnings: true });
     expect(t.database.useEmulator).toHaveBeenCalledWith("127.0.0.1", 9000);
   });
 
