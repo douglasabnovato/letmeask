@@ -110,3 +110,21 @@
     }
   }
 }
+/* Celular: o código da sala e o botão "Encerrar sala" quebram de linha em vez de se sobrepor (achado pelo e2e em 412 px) */
+@media (max-width: 720px) {
+  #page-room {
+    header .content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+
+      > div {
+        flex-wrap: wrap;
+      }
+    }
+
+    main {
+      padding: 0 16px;
+    }
+  }
+}

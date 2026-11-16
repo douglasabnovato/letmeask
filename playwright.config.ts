@@ -29,7 +29,7 @@ export default defineConfig({
   },
   projects: [
     { name: "desktop", use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 800 } } },
-    { name: "celular", use: { ...devices["Pixel 7"] } },
+    { name: "celular", use: { ...devices["Pixel 7"], viewport: { width: 375, height: 812 } } },
   ],
   webServer: {
     command: `npx vite build --mode e2e --outDir build-e2e && npx vite preview --outDir build-e2e --host 127.0.0.1 --port ${PORT} --strictPort`,
