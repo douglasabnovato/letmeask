@@ -54,3 +54,4 @@ rooms/{roomId}
 | ADR-03 | Datas com `ServerValue.TIMESTAMP` | Ordem confiável e não manipulável | `new Date()` no cliente |
 | ADR-04 | Diálogo nativo `<dialog>` próprio (ConfirmDialog) | Acessível, sem dependência | react-modal / `confirm()` |
 | ADR-05 | Testes de regras com `@firebase/rules-unit-testing` + emulador | Regras são a camada de segurança | Confiar só na interface |
+| ADR-06 (16/11/2026) | Teste de ponta a ponta com Playwright e axe nos emuladores de Auth e de Realtime Database, projeto `demo-letmeask` | O login Google real exige conta do responsável; o emulador tem popup de login falso e aplica as mesmas regras, sem tocar recurso real | Simular o Firebase no navegador (não testa SDK, rede nem regras) |
