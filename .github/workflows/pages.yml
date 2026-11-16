@@ -30,6 +30,9 @@ jobs:
           if [ -z "${{ vars.VITE_FIREBASE_API_KEY }}" ] || [ -z "${{ vars.VITE_FIREBASE_DATABASE_URL }}" ]; then
             echo "Faltam VITE_FIREBASE_API_KEY ou VITE_FIREBASE_DATABASE_URL nas Variables do repositório"; exit 1
           fi
+          if [ -n "${{ vars.VITE_FIREBASE_EMULATORS }}" ]; then
+            echo "A Variable VITE_FIREBASE_EMULATORS é só para testes: apague-a antes de publicar"; exit 1
+          fi
       - run: npm ci
       - run: npm run build:pages
         env:
@@ -53,5 +56,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - uses: actions/configure-pages@v5
       - id: deployment
         uses: actions/deploy-pages@v4

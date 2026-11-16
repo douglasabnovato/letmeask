@@ -10,8 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "deploy": "npm run build && firebase deploy",
-    "test:rules": "npx firebase-tools emulators:exec --only database \"vitest run --config vitest.rules.config.ts\"",
-    "test:e2e": "npx firebase-tools emulators:exec --project demo-letmeask --only auth,database \"playwright test\"",
+    "test:rules": "npx firebase-tools@15.36.0 emulators:exec --only database \"vitest run --config vitest.rules.config.ts\"",
+    "test:e2e": "npx firebase-tools@15.36.0 emulators:exec --project demo-letmeask --only auth,database \"playwright test\"",
     "typecheck:e2e": "tsc -p tsconfig.e2e.json"
   },
   "dependencies": {

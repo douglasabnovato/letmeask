@@ -153,7 +153,7 @@ Projeto de estudo (N1): 10 de 10 critérios aplicáveis atendidos. **Finalizado*
 **O que queremos fazer**
 - #12 Confirmar o Firebase e publicar a versão atual (responsável).
 - #14 Percorrer o fluxo completo com o Firebase real (responsável).
-- #17 Ligar a publicação no GitHub Pages: Variables e fonte do Pages (responsável).
+- #17 Decidir e ligar a publicação: Pages por Actions (Variables e fonte do Pages) ou Firebase Hosting (responsável).
 - #22 Exigir o check `e2e` no ruleset da `main` (responsável).
 - #23 Restringir a chave da API do Firebase aos endereços do app (responsável).
 - #24 Ligar os alertas do Dependabot (responsável).
