@@ -81,3 +81,42 @@ Timebox: 60 min.
 4. `docs/MVP.md` com o resumo batendo com a tabela (8 de 10) e "Finalizado: sim"; README com estado e próximos passos.
 
 **Vira issue.** #12, #13, #14 e #17 (responsável); #15 e #16 (agente).
+
+## Ciclo de 16/11/2026
+
+### Produto
+
+- **Problema e público:** quem apresenta ao vivo (aula, palestra, reunião) recebe perguntas da audiência sem perder nenhuma e responde as mais curtidas primeiro.
+- **Hipótese:** acreditamos que uma sala com código curto e curtidas leva a pergunta de quem assiste até quem apresenta sem ajuda. Meta: o fluxo inteiro (entrar, criar sala, perguntar, curtir, destacar, responder, encerrar) roda no navegador, com duas contas ao mesmo tempo. Saberemos quando o teste de ponta a ponta passar no CI a cada PR e, depois da #14, quando uma pessoa concluir o fluxo no Firebase real sem ajuda.
+- **Estado conferido em 16/11/2026:** a revisão contra a régua achou dois "Atende" sem a evidência que ela pede. O critério 8 citava axe "do ciclo de 02/11", sem teste no navegador no CI. O critério 2 não tinha meta nem "saberemos quando". A nota honesta antes do ciclo é 7 de 10, não 9 de 10.
+- **O que a pesquisa trouxe:**
+  - O Firebase Local Emulator Suite tem emulador de Authentication com login Google falso (um popup do próprio emulador) e de Realtime Database com as regras do `database.rules.json`. Um projeto com id `demo-*` não toca nenhum recurso real. Fonte: [Connect your app to the Authentication Emulator](https://firebase.google.com/docs/emulator-suite/connect_auth) e [Connect your app to the Realtime Database Emulator](https://firebase.google.com/docs/emulator-suite/connect_rtdb).
+  - O Playwright recomenda o `@axe-core/playwright` para checar cada tela no navegador. Fonte: [Playwright, Accessibility testing](https://playwright.dev/docs/accessibility-testing).
+  - Num diálogo modal, o Tab e o Shift+Tab ficam presos dentro dele, e o Esc fecha. Hoje o `ConfirmDialog` fecha com Esc, mas o Tab sai do diálogo. Fonte: [WAI-ARIA APG, Dialog (Modal) Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
+- **Backlog (impacto × esforço):**
+
+| Item | Impacto | Esforço | Neste ciclo |
+|---|---|---|---|
+| Teste de ponta a ponta no navegador, com axe, contra os emuladores (critérios 3 e 8) | Alto | Médio | Sim |
+| Tab preso no diálogo de confirmação (critério 8, APG) | Médio | Baixo | Sim |
+| Patch do `react-router-dom` (critério 9) | Baixo | Baixo | Sim |
+| Hipótese com meta e MVP com evidência real (critérios 2 e 12) | Médio | Baixo | Sim |
+| Publicar a versão atual e percorrer com o Firebase real (#12, #14) | Alto | Baixo | Não: conta do responsável |
+| Moderação e pergunta anônima (#15, #16) | Médio | Alto | Não: issues |
+
+- **Fora do escopo:** mudar o login (segue só Google), moderação, troca de hospedagem.
+
+### Engenharia
+
+- **Arquitetura:** SPA React 18 + Vite 8, Firebase 11 (API compat) para login Google e Realtime Database; não há servidor próprio. Com `VITE_FIREBASE_EMULATORS=true`, o app liga no emulador de Auth (porta 9099) e de Realtime Database (porta 9000), só para testes.
+- **Riscos:** o popup do emulador de Auth muda de tela entre versões do `firebase-tools`; o emulador de banco precisa de Java, que não há no computador local (o teste roda só no CI); o modo emulador não pode vazar para o build publicado.
+- **Qualidade:** Vitest (interface e regras no emulador), Playwright com axe em cada tela do fluxo, teste de teclado (Tab, Esc, foco visível). O app não tem tema escuro próprio: não há `prefers-color-scheme` no CSS, então o axe roda no claro, em desktop e em 375 px.
+- **Pronto:** CI verde com os jobs `raiz`, `regras` e `e2e`; `docs/MVP.md` com cada "Atende" citando comando, data e run.
+
+### Plano de ação
+
+1. Patch do `react-router-dom` 7.18.4 → 7.18.5 e `npm audit --omit=dev`.
+2. Modo emulador no `src/services/firebase.ts`, com teste.
+3. `e2e/fluxo.e2e.ts`, `playwright.config.ts` e job `e2e` no CI, com o fluxo de duas contas e axe.
+4. Tab preso no `ConfirmDialog`, com teste.
+5. `docs/MVP.md`, README e `docs/DEPLOY.md` com o estado real; issues novas para o que ficar.

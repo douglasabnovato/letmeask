@@ -25,3 +25,9 @@ yarn-error.log*
 /build
 .env
 .firebase/
+
+# Firebase emuladores e Playwright
+*-debug.log
+/test-results
+/playwright-report
+/build-e2e

@@ -33,8 +33,8 @@
 
 ## 🌐 Publicação
 
-- https://letmeask-aulas.web.app respondeu 200 em 06/11/2026, mas com uma build antiga (do Create React App, anterior à versão 2.0). Para ver a versão atual, rode localmente (seção "Como executar"). Publicar a atual: #12.
-- Hospedagem prevista: GitHub Pages publicado pelo GitHub Actions a cada push na `main` (variáveis `VITE_FIREBASE_*` nas Variables do repositório) + Firebase (Authentication e Realtime Database, plano Spark). Alternativa: Firebase Hosting com `npm run deploy`
+- Conferido em 16/11/2026 com `curl`: https://letmeask-aulas.web.app responde 200, mas com uma build antiga (do Create React App, anterior à versão 2.0). Para ver a versão atual, rode localmente (seção "Como executar"). Publicar a atual: #12.
+- Hospedagem preparada: GitHub Pages pelo workflow `.github/workflows/pages.yml`, parado até o responsável criar as Variables e ligar o Pages (#17). Alternativa: Firebase Hosting com `npm run deploy`. Backend: Firebase (Authentication e Realtime Database, plano gratuito Spark).
 - Passo a passo, incluindo a publicação das regras do banco: [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ## 💻 Projeto 
@@ -139,30 +139,37 @@ Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUI
 
 ---
 
-## Estado e próximos passos (ciclo de 03/11/2026)
+## Estado e próximos passos (ciclo de 16/11/2026)
 
-Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos. **Finalizado**: o que falta depende do responsável (#14). A `main` está protegida desde 10/11/2026 (#13).
+Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos (o 9 está "Parcial": alertas do Dependabot desligados, #24). **Finalizado**: o que falta depende do responsável (#12, #14, #17 e #24). A `main` está protegida desde 10/11/2026 (#13).
 
 **O que foi feito**
 - Estado de estudo, avaliação e CI de verificação registrados (#2).
 - MVP de estudo com acessibilidade conferida (#6).
 - Alertas altos do Firebase resolvidos com override do `@grpc/grpc-js` (#9).
-- Neste ciclo: CI também nos PRs para `developer/**`, testes das regras do banco no CI, testes de falhas do Firebase e limpeza dos arquivos do Create React App (#11).
+- CI também nos PRs para `developer/**`, testes das regras do banco no CI, testes de falhas do Firebase e limpeza dos arquivos do Create React App (#11).
+- Ciclo de 16/11/2026 (#21): teste de ponta a ponta no navegador com axe, nos emuladores do Firebase (job `e2e`); contraste do contador de perguntas, nome do botão de curtir e cabeçalho da sala no celular corrigidos; Tab preso no diálogo de confirmação; workflow do Pages preparado.
 
 **O que queremos fazer**
 - #12 Confirmar o Firebase e publicar a versão atual (responsável).
 - #14 Percorrer o fluxo completo com o Firebase real (responsável).
+- #17 Decidir e ligar a publicação: Pages por Actions (Variables e fonte do Pages) ou Firebase Hosting (responsável).
+- #22 Exigir o check `e2e` no ruleset da `main` (responsável).
+- #23 Restringir a chave da API do Firebase aos endereços do app (responsável).
+- #24 Ligar os alertas do Dependabot (responsável).
+- #25 Migrar para a API modular do Firebase 13.
 - #15 Moderação de perguntas pelo dono da sala.
 - #16 Pergunta anônima em sala com moderação.
-- #17 Decidir o modelo de CI com deploy em `ci/` (responsável).
 
 **Onde está a documentação**
 - Estado e critérios: [docs/MVP.md](docs/MVP.md)
-- Plano, pesquisa e backlog: [docs/PLANO-DE-ACAO.md](docs/PLANO-DE-ACAO.md) (seção "Ciclo de 03/11/2026")
+- Plano, pesquisa e backlog: [docs/PLANO-DE-ACAO.md](docs/PLANO-DE-ACAO.md) (seção "Ciclo de 16/11/2026")
+- Publicação: [docs/DEPLOY.md](docs/DEPLOY.md)
+- Arquitetura: [docs/ARQUITETURA.md](docs/ARQUITETURA.md)
 
 ## 🚀 Como executar
 
-Requisitos: Node 22+ e, para os testes de regras, Java 11+.
+Requisitos: Node 22+ e, para os testes de regras e de ponta a ponta, Java 21 (os emuladores do Firebase usam Java; o CI usa o 21).
 
 ```bash
 $ git clone https://github.com/douglasabnovato/letmeask
@@ -178,8 +185,10 @@ No [Firebase](https://firebase.google.com/): crie o projeto, ative **Authenticat
 |---|---|
 | `npm test` | Testes de interface (Vitest) |
 | `npm run test:rules` | Testes das regras no emulador do Realtime Database |
+| `npm run test:e2e` | Fluxo completo no navegador (Playwright e axe) nos emuladores de Auth e de banco. Antes, uma vez: `npx playwright install chromium` |
+| `npm run typecheck:e2e` | Typecheck dos testes de ponta a ponta |
 | `npm run build` | Typecheck + build em `build/` (base `/`, para o Firebase Hosting) |
-| `npm run build:pages` | Build com base `/letmeask/` e `404.html` para o GitHub Pages (previsto no modelo `ci/github-actions-ci.yml`, ainda não ativo: #17) |
+| `npm run build:pages` | Build com base `/letmeask/` e `404.html` para o GitHub Pages (usado pelo `.github/workflows/pages.yml`, parado até a #17) |
 | `npm run deploy` | Alternativa: build + `firebase deploy` (Hosting e regras, plano gratuito Spark) |
 | `npx firebase-tools deploy --only database` | Publica só as regras do Realtime Database |
 
