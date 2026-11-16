@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "deploy": "npm run build && firebase deploy",
-    "test:rules": "npx firebase-tools emulators:exec --only database \"vitest run --config vitest.rules.config.ts\""
+    "test:rules": "npx firebase-tools emulators:exec --only database \"vitest run --config vitest.rules.config.ts\"",
+    "test:e2e": "npx firebase-tools emulators:exec --project demo-letmeask --only auth,database \"playwright test\""
   },
   "dependencies": {
     "classnames": "^2.5.1",
@@ -20,7 +21,9 @@
     "react-router-dom": "^7.18.5"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@firebase/rules-unit-testing": "^4.0.1",
+    "@playwright/test": "^1.65.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.3.0",
