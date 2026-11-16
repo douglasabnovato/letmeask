@@ -8,7 +8,12 @@ async function entrarComGoogle(page: Page, abrir: () => Promise<void>, nome: str
   const popupPromise = page.waitForEvent("popup");
   await abrir();
   const popup = await popupPromise;
-  await popup.locator("#add-account-button button").click();
+  /* O popup do emulador liga os botões só depois de carregar os scripts: repete o clique até o formulário aparecer */
+  await popup.waitForLoadState("load");
+  await expect(async () => {
+    await popup.locator("#add-account-button button").click();
+    await expect(popup.locator("#email-input")).toBeVisible({ timeout: 2_000 });
+  }).toPass({ timeout: 20_000 });
   await popup.locator("#email-input").fill(email);
   await popup.locator("#display-name-input").fill(nome);
   await popup.locator("#sign-in").click();
@@ -20,7 +25,7 @@ async function semViolacoes(page: Page, tela: string, seletor?: string) {
   const builder = new AxeBuilder({ page });
   if (seletor) builder.include(seletor);
   const { violations } = await builder.analyze();
-  expect(violations.map((v) => `${tela}: ${v.id} (${v.nodes.length})`)).toEqual([]);
+  expect(violations.map((v) => `${tela}: ${v.id} em ${v.nodes.map((n) => n.target.join(" ")).join(", ")} | ${v.nodes[0]?.failureSummary ?? ""}`)).toEqual([]);
 }
 
 /* Sem rolagem horizontal na largura atual */
@@ -82,7 +87,7 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   const curtir = participante.getByRole("button", { name: /Curtir pergunta/ });
   await curtir.click();
   await expect(curtir).toHaveAttribute("aria-pressed", "true");
-  await expect(curtir).toHaveAccessibleName("Curtir pergunta (1 curtida)");
+  await expect(curtir).toHaveAccessibleName("Curtir pergunta, 1 curtida");
   await semViolacoes(participante, "sala com pergunta");
   await semRolagemHorizontal(participante);
 
