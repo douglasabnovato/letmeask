@@ -2,11 +2,15 @@
 
 > Revisto em 06/11/2026 (ciclo de 03/11/2026). Nível: **Estudo (N1)**. Os critérios 5 e 7 não se aplicam ao N1 e saem da conta. Testado no Windows, com Node 24, no clone da `feature/2026-11-06`. Não houve teste com pessoas nem em aparelho real.
 
-**Finalizado: sim**, pela decisão 4 do processo: os dois critérios que faltam dependem do responsável e têm issue aberta com `depende-do-responsavel`: o 3 (Firebase real, #14, destravado pela #12) e o 10 (proteção da `main`, #13).
+**Resumo:** 9 de 10 aplicáveis atendidos
+
+**Finalizado:** sim
+
+Pela decisão 4 do processo: o critério que falta depende do responsável e tem issue aberta com `depende-do-responsavel`: o 3 (Firebase real, #14, destravado pela #12). O 10 passou a "Atende" em 10/11/2026, com a `main` protegida (#13).
 
 > Correção: a versão de 02/11 dizia "7 de 12" no título, mas a tabela tinha 8 "Atende".
 
-## 1. Critérios: 8 de 10 aplicáveis atendidos
+## 1. Critérios: 9 de 10 aplicáveis atendidos (critério 10 revisto em 10/11/2026)
 
 | # | Critério | Como verificar | Situação | Evidência e data |
 |---|---|---|---|---|
@@ -19,7 +23,7 @@
 | 7 | Desempenho aceitável | LCP de até 2,5 s no celular | Não se aplica (N1). O endereço publicado responde, mas com uma build antiga. | #12 |
 | 8 | Acessibilidade básica | axe e teclado | Atende: axe sem violações em 2 telas; foco visível em todas as tabulações; sem rolagem em 375 px. | Ciclo de 02/11/2026 |
 | 9 | Segurança e conformidade | Riscos decididos | Atende: `npm audit --omit=dev` sem alertas, com `@grpc/grpc-js` fixado por `overrides`; regras do banco testadas no emulador a cada PR (job `regras`). | CI do #11, 06/11/2026 |
-| 10 | Entrega confiável | CI verde antes de entrar na principal | Parcial: CI roda em PR e push para `main` e `developer/**`, mas a `main` não tem proteção. | #13 (responsável) |
+| 10 | Entrega confiável | CI verde antes de entrar na principal | Atende: ruleset `principal-protegida` ativo na `main` (exige PR, bloqueia force push e exclusão); o workflow `CI` roda em PR e push para `main` e `developer/**`. | `gh api repos/douglasabnovato/letmeask/rulesets`, 10/11/2026; #13 |
 | 11 | Testes dos fluxos críticos | Testes automatizados no CI | Atende: 9 testes de interface e 9 de regras do banco. | CI do #11 |
 | 12 | Documentação honesta | O README ensina a rodar | Atende: comandos conferidos com o `package.json`; README corrigido onde dizia que o CI publica no Pages; seção de estado e próximos passos. | README, 06/11/2026 |
 
