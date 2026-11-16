@@ -141,7 +141,7 @@ Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUI
 
 ## Estado e próximos passos (ciclo de 16/11/2026)
 
-Projeto de estudo (N1): 10 de 10 critérios aplicáveis atendidos. **Finalizado**: o que falta depende do responsável (#12, #14 e #17). A `main` está protegida desde 10/11/2026 (#13).
+Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos (o 9 está "Parcial": alertas do Dependabot desligados, #24). **Finalizado**: o que falta depende do responsável (#12, #14, #17 e #24). A `main` está protegida desde 10/11/2026 (#13).
 
 **O que foi feito**
 - Estado de estudo, avaliação e CI de verificação registrados (#2).
