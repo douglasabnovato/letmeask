@@ -141,7 +141,7 @@ Detalhes em [docs/ANALISE.md](docs/ANALISE.md), [docs/ARQUITETURA.md](docs/ARQUI
 
 ## Estado e próximos passos (ciclo de 16/11/2026)
 
-Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos (o 9 está "Parcial": alertas do Dependabot desligados, #24). **Finalizado**: o que falta depende do responsável (#12, #14, #17 e #24). A `main` está protegida desde 10/11/2026 (#13).
+Projeto de estudo (N1): 10 de 10 critérios aplicáveis atendidos. **Finalizado**. O critério 9 atende desde 16/11/2026: com os alertas do Dependabot ligados (#24), há 0 alertas abertos e o `npm audit --omit=dev` dá 0. Seguem com o responsável: publicar (#12, #17) e o Firebase real (#14). A `main` está protegida desde 10/11/2026 (#13).
 
 **O que foi feito**
 - Estado de estudo, avaliação e CI de verificação registrados (#2).
@@ -156,7 +156,7 @@ Projeto de estudo (N1): 9 de 10 critérios aplicáveis atendidos (o 9 está "Par
 - #17 Decidir e ligar a publicação: Pages por Actions (Variables e fonte do Pages) ou Firebase Hosting (responsável).
 - #22 Exigir o check `e2e` no ruleset da `main` (responsável).
 - #23 Restringir a chave da API do Firebase aos endereços do app (responsável).
-- #24 Ligar os alertas do Dependabot (responsável).
+- #24 Ligar os alertas do Dependabot (ligados pelo responsável em 16/11/2026, com 0 alertas abertos; a issue fica para ele fechar).
 - #25 Migrar para a API modular do Firebase 13.
 - #15 Moderação de perguntas pelo dono da sala.
 - #16 Pergunta anônima em sala com moderação.
