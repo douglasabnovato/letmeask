@@ -28,6 +28,15 @@ async function semViolacoes(page: Page, tela: string, seletor?: string) {
   expect(violations.map((v) => `${tela}: ${v.id} em ${v.nodes.map((n) => n.target.join(" ")).join(", ")} | ${v.nodes[0]?.failureSummary ?? ""}`)).toEqual([]);
 }
 
+/* Contorno de foco definido pelo app em global.scss (:focus-visible), não o padrão do navegador */
+const CONTORNO_DO_APP = "solid 3px rgb(41, 41, 46)";
+async function contornoDeFoco(page: Page) {
+  return page.evaluate(() => {
+    const s = getComputedStyle(document.activeElement as Element);
+    return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
+  });
+}
+
 /* Sem rolagem horizontal na largura atual */
 async function semRolagemHorizontal(page: Page) {
   const largura = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -56,7 +65,9 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   await expect(page.getByText("Nenhuma pergunta ainda")).toBeVisible();
   await semViolacoes(page, "painel vazio");
 
-  /* Participante, em outro contexto (outra pessoa): entra pelo código e faz login na sala */
+  /* Participante, em outro contexto (outra pessoa): entra pelo código e faz login na sala.
+     A sala abre sem login porque o database.rules.json libera a leitura de rooms/$roomId (".read": true);
+     a lista rooms segue fechada (".read": false). Se essa regra mudar, este passo quebra. */
   const u = info.project.use;
   const outro = await browser.newContext({
     baseURL,
@@ -113,11 +124,14 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   const dialogo = page.getByRole("alertdialog", { name: "Encerrar sala" });
   await expect(dialogo).toBeVisible();
   await expect(dialogo.getByRole("button", { name: "Cancelar" })).toBeFocused();
-  await semViolacoes(page, "diálogo de encerrar", ".dialog");
+  /* axe na página inteira com o diálogo aberto: o diálogo, o fundo escurecido e o painel atrás dele */
+  await semViolacoes(page, "diálogo de encerrar");
   await page.keyboard.press("Tab");
   await expect(dialogo.getByRole("button", { name: "Sim, encerrar" })).toBeFocused();
+  expect(await contornoDeFoco(page)).toBe(CONTORNO_DO_APP);
   await page.keyboard.press("Tab");
   await expect(dialogo.getByRole("button", { name: "Cancelar" })).toBeFocused();
+  expect(await contornoDeFoco(page)).toBe(CONTORNO_DO_APP);
   await page.keyboard.press("Escape");
   await expect(dialogo).toBeHidden();
   await expect(encerrar).toBeFocused();
@@ -145,11 +159,7 @@ test("só teclado: Tab chega aos controles da Home com foco visível e o código
   const criar = page.getByRole("button", { name: "Crie sua sala com o Google" });
   await expect(criar).toBeFocused();
   /* Foco visível com o contorno definido pelo app (global.scss), não o padrão do navegador */
-  const contorno = await criar.evaluate((el) => {
-    const s = getComputedStyle(el);
-    return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
-  });
-  expect(contorno).toBe("solid 3px rgb(41, 41, 46)");
+  expect(await contornoDeFoco(page)).toBe(CONTORNO_DO_APP);
 
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Código da sala")).toBeFocused();
