@@ -1,6 +1,6 @@
 /* Fluxo principal no navegador, com duas contas, contra os emuladores do Firebase; axe em cada tela e teste de teclado.
    O app não tem tema escuro próprio (não há prefers-color-scheme no CSS): o axe roda no tema claro, em desktop e em celular. */
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 /* Login Google pelo popup do emulador de Auth: cria a conta fictícia e volta logado */
@@ -26,6 +26,16 @@ async function semViolacoes(page: Page, tela: string, seletor?: string) {
   if (seletor) builder.include(seletor);
   const { violations } = await builder.analyze();
   expect(violations.map((v) => `${tela}: ${v.id} em ${v.nodes.map((n) => n.target.join(" ")).join(", ")} | ${v.nodes[0]?.failureSummary ?? ""}`)).toEqual([]);
+}
+
+/* Contorno de foco definido pelo app em global.scss (:focus-visible), não o padrão do navegador */
+const CONTORNO_DO_APP = "solid 3px rgb(41, 41, 46)";
+async function contornoDeFoco(elemento: Locator) {
+  await expect(elemento).toBeFocused();
+  return elemento.evaluate((el) => {
+    const s = getComputedStyle(el);
+    return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
+  });
 }
 
 /* Sem rolagem horizontal na largura atual */
@@ -56,7 +66,9 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   await expect(page.getByText("Nenhuma pergunta ainda")).toBeVisible();
   await semViolacoes(page, "painel vazio");
 
-  /* Participante, em outro contexto (outra pessoa): entra pelo código e faz login na sala */
+  /* Participante, em outro contexto (outra pessoa): entra pelo código e faz login na sala.
+     A sala abre sem login porque o database.rules.json libera a leitura de rooms/$roomId (".read": true);
+     a lista rooms segue fechada (".read": false). Se essa regra mudar, este passo quebra. */
   const u = info.project.use;
   const outro = await browser.newContext({
     baseURL,
@@ -113,11 +125,23 @@ test("dono cria a sala, participante pergunta e curte, dono destaca, responde e 
   const dialogo = page.getByRole("alertdialog", { name: "Encerrar sala" });
   await expect(dialogo).toBeVisible();
   await expect(dialogo.getByRole("button", { name: "Cancelar" })).toBeFocused();
-  await semViolacoes(page, "diálogo de encerrar", ".dialog");
+  /* axe na página inteira com o diálogo aberto. O alertdialog conta como região para o axe (regra region).
+     O painel atrás do fundo escurecido sai como "incomplete" (coberto), não é medido aqui: ele já passou no axe acima, sem o diálogo */
+  await semViolacoes(page, "diálogo de encerrar");
+  const cancelar = dialogo.getByRole("button", { name: "Cancelar" });
+  const confirmar = dialogo.getByRole("button", { name: "Sim, encerrar" });
   await page.keyboard.press("Tab");
-  await expect(dialogo.getByRole("button", { name: "Sim, encerrar" })).toBeFocused();
+  expect(await contornoDeFoco(confirmar)).toBe(CONTORNO_DO_APP);
   await page.keyboard.press("Tab");
-  await expect(dialogo.getByRole("button", { name: "Cancelar" })).toBeFocused();
+  expect(await contornoDeFoco(cancelar)).toBe(CONTORNO_DO_APP);
+  await page.keyboard.press("Escape");
+  await expect(dialogo).toBeHidden();
+  await expect(encerrar).toBeFocused();
+
+  /* Aberto pelo teclado (Enter), o Cancelar já recebe o contorno do app, antes de qualquer Tab */
+  await page.keyboard.press("Enter");
+  await expect(dialogo).toBeVisible();
+  expect(await contornoDeFoco(cancelar)).toBe(CONTORNO_DO_APP);
   await page.keyboard.press("Escape");
   await expect(dialogo).toBeHidden();
   await expect(encerrar).toBeFocused();
@@ -145,11 +169,7 @@ test("só teclado: Tab chega aos controles da Home com foco visível e o código
   const criar = page.getByRole("button", { name: "Crie sua sala com o Google" });
   await expect(criar).toBeFocused();
   /* Foco visível com o contorno definido pelo app (global.scss), não o padrão do navegador */
-  const contorno = await criar.evaluate((el) => {
-    const s = getComputedStyle(el);
-    return `${s.outlineStyle} ${s.outlineWidth} ${s.outlineColor}`;
-  });
-  expect(contorno).toBe("solid 3px rgb(41, 41, 46)");
+  expect(await contornoDeFoco(criar)).toBe(CONTORNO_DO_APP);
 
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Código da sala")).toBeFocused();
